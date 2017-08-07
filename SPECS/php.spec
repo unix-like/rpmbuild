@@ -10,17 +10,17 @@ BuildRoot:      %_topdir/BUILDROOT
 
 Source0:        http://php.net/get/%{name}-%{version}.tar.bz2
 Source10:       php-fpm.init
-Source11:       php.logrotate
+Source11:       php-fpm.logrotate
 
 
-BuildRequires:  openssl-devel,pcre-devel,zlib-devel
+BuildRequires:  openssl-devel,pcre-devel,zlib-devel,bzip2-devel,libcurl-devel,libjpeg-turbo-devel,libpng-devel,freetype-devel,libmcrypt-devel,readline-devel
 Requires:       openssl,pcre
 
 %description
-Tengine is a web server originated by Taobao, the largest e-commerce website 
-in Asia. It is based on the Nginx HTTP server and has many advanced features.
-Tengine has proven to be very stable and efficient on some of the top 100 
-websites in the world, including taobao.com and tmall.com.
+PHP is an HTML-embedded scripting language. Much of its syntax is
+borrowed from C, Java and Perl with a couple of unique PHP-specific
+features thrown in. The goal of the language is to allow web 
+developers to write dynamically generated pages quickly.
 
 
 %prep
@@ -29,12 +29,55 @@ websites in the world, including taobao.com and tmall.com.
 
 %build
 
-./configure \
-    --prefix=/gotwo_data/Application/nginx \
-    --error-log-path=/gotwo_data/logs/nginx/error.log \
-    --http-log-path=/gotwo_data/logs/nginx/access.log \
-    --pid-path=/var/run/nginx.pid \
-    --lock-path=/var/lock/subsys/nginx 
+%configure
+
+    --prefix=/gotwo_data/Application/php \
+    --with-config-file-path=/gotwo_data/Application/php/etc \
+    --with-fpm-user=nobody \
+    --with-fpm-group=nobody \
+    --enable-inline-optimization \
+    --disable-debug \
+    --disable-rpath \
+    --enable-shared \
+    --enable-fpm \
+    --enable-mysqlnd \
+    --with-mysqli=mysqlnd \
+    --with-pdo-mysql=mysqlnd \
+    --with-gettext \
+    --enable-mbstring \
+    --with-iconv \
+    --with-mcrypt \
+    --with-mhash \
+    --with-openssl \
+    --enable-soap \
+    --enable-xml \
+    --with-libxml-dir \
+    --enable-pcntl \
+    --enable-shmop \
+    --enable-sysvmsg \
+    --enable-sysvsem \
+    --enable-sysvshm \
+    --enable-sockets \
+    --with-curl \
+    --with-zlib \
+    --enable-zip \
+    --with-bz2 \
+    --with-readline \
+    --enable-ftp \
+    --enable-wddx \
+    --with-gd \
+    --with-jpeg-dir \
+    --with-png-dir \
+    --enable-gd-native-ttf \
+    --enable-bcmath \
+    --enable-exif \
+    --with-pcre-regex \
+    --enable-mbstring=all \
+    --with-libmbfl \
+    --with-freetype-dir=/usr/include/freetype2/ \
+    --enable-opcache \
+    --with-zlib-dir
+
 
 make %{?_smp_mflags}
 
@@ -43,64 +86,29 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot} 
 
 install -p -D -m 0755 %{SOURCE10} \
-    %{buildroot}%{_initrddir}/nginx
+    %{buildroot}%{_initrddir}/php-fpm
 install -p -D -m 0644 %{SOURCE11} \
-    %{buildroot}%{_sysconfdir}/logrotate.d/nginx
-
-install -p -d -m 0755 %{buildroot}/gotwo_data/Application/nginx/conf/vhosts/
+    %{buildroot}%{_sysconfdir}/logrotate.d/php-fpm
 
 
 %pre
-if [ $1 == 1 ];then
-        /usr/sbin/useradd -r nginx -s /sbin/nologin 2> /dev/null
-fi 
+
 
 %post
 if [ $1 -eq 1  ];then
-    /sbin/chkconfig --add nginx
-    /sbin/chkconfig nginx on
-
-echo '#下面主要是nginx内核参数的优化，包括tcp的快速释放和重利用等。
-fs.file-max = 999999
-net.ipv4.tcp_tw_reuse = 1
-net.ipv4.tcp_keepalive_time = 600
-net.ipv4.tcp_fin_timeout = 30
-net.ipv4.tcp_max_tw_buckets = 5000
-net.ipv4.ip_local_port_range = 1024 61000
-net.ipv4.tcp_rmem = 10240 87380 12582912
-net.ipv4.tcp_wmem = 10240 87380 12582912
-net.core.netdev_max_backlog = 8096
-net.core.rmem_default = 6291456
-net.core.wmem_default = 6291456
-net.core.rmem_max = 12582912
-net.core.wmem_max = 12582912
-net.ipv4.tcp_max_syn_backlog = 1024
-
- 
-
-net.ipv4.tcp_tw_recycle = 1
-net.core.somaxconn = 262144
-net.ipv4.tcp_max_orphans = 262144
-net.ipv4.tcp_timestamps = 0
-net.ipv4.tcp_synack_retries = 1
-net.ipv4.tcp_syn_retries = 1
-' >> /etc/sysctl.conf
-sysctl -p 2>&1 /dev/null
+    /sbin/chkconfig --add php-fpm
+    /sbin/chkconfig php-fpm on
 fi
  
 %preun
-if [ $1 -eq 0 ];then
-    /etc/init.d/nginx stop > /dev/null 2>&1
-    /usr/sbin/userdel -r nginx 2> /dev/null
-        /sbin/chkconfig --del nginx
-fi
+
 %postun
 
 %files
 %defattr(-,root,root,0755)
-/gotwo_data/Application/nginx
-%attr(0755,root,root) /etc/rc.d/init.d/nginx
-%attr(0644,root,root) /etc/logrotate.d/nginx
+/gotwo_data/Application/php
+%attr(0755,root,root) /etc/rc.d/init.d/php-fpm
+%attr(0644,root,root) /etc/logrotate.d/php-fpm
 %doc
 
 

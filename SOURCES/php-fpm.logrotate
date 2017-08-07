@@ -1,0 +1,12 @@
+/gotwo_data/logs/php/*log {
+    daily
+    rotate 10
+    missingok
+    notifempty
+    compress
+    sharedscripts
+    postrotate
+        /bin/kill -USR1 $(cat /gotwo_data/Application/php/var/run/php-fpm.pid 2>/dev/null) 2>/dev/null || :
+    endscript
+}
+
