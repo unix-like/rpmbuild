@@ -107,6 +107,7 @@ install -p -D -m 0644 %{SOURCE15} \
 if [ $1 -eq 1  ];then
     /sbin/chkconfig --add php-fpm
     /sbin/chkconfig php-fpm on
+    mkdir -p /gotwo_data/logs/php
 fi
  
 %preun
@@ -118,6 +119,7 @@ fi
 /gotwo_data/Application/php
 %attr(0755,root,root) /etc/rc.d/init.d/php-fpm
 %attr(0644,root,root) /etc/logrotate.d/php-fpm
+%attr(0755,root,root) /gotwo_data/logs/php
 %doc
 
 

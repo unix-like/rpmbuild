@@ -86,6 +86,8 @@ net.ipv4.tcp_synack_retries = 1
 net.ipv4.tcp_syn_retries = 1
 ' >> /etc/sysctl.conf
 sysctl -p 2>&1 /dev/null
+
+mkdir -p  /gotwo_data/logs/nginx
 fi
  
 %preun
@@ -101,12 +103,13 @@ fi
 /gotwo_data/Application/nginx
 %attr(0755,root,root) /etc/rc.d/init.d/nginx
 %attr(0644,root,root) /etc/logrotate.d/nginx
+%attr(0755,root,root) /gotwo_data/logs/nginx
 %doc
 
 
 
 %changelog
-* Mon Oct 04 2017 Jamie Nguyen <yunwei@stargoto.com> - 2.2.0-1
+* Mon Oct 04 2017 xiao xing <yunwei@stargoto.com> - 2.2.0-1
 - update to upstream release 2.2.0
 
 
