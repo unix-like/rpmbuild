@@ -11,6 +11,10 @@ BuildRoot:      %_topdir/BUILDROOT
 Source0:        http://php.net/get/%{name}-%{version}.tar.bz2
 Source10:       php-fpm.init
 Source11:       php-fpm.logrotate
+Source12:       php.ini
+Source13:       php-fpm.conf
+Source14:       www.conf
+Source15:       redis.so
 
 
 BuildRequires:  openssl-devel,pcre-devel,zlib-devel,bzip2-devel,libcurl-devel,libjpeg-turbo-devel,libpng-devel,freetype-devel,libmcrypt-devel,readline-devel
@@ -29,8 +33,7 @@ developers to write dynamically generated pages quickly.
 
 %build
 
-%configure
-
+./configure \
     --prefix=/gotwo_data/Application/php \
     --with-config-file-path=/gotwo_data/Application/php/etc \
     --with-fpm-user=nobody \
@@ -89,8 +92,14 @@ install -p -D -m 0755 %{SOURCE10} \
     %{buildroot}%{_initrddir}/php-fpm
 install -p -D -m 0644 %{SOURCE11} \
     %{buildroot}%{_sysconfdir}/logrotate.d/php-fpm
-
-
+install -p -D -m 0644 %{SOURCE12} \
+    %{buildroot}/gotwo_data/Application/php/etc/php.ini
+install -p -D -m 0644 %{SOURCE13} \
+    %{buildroot}/gotwo_data/Application/php/etc/php-fpm.conf
+install -p -D -m 0644 %{SOURCE14} \
+    %{buildroot}/gotwo_data/Application/php/etc/php-fpm.d/www.conf
+install -p -D -m 0644 %{SOURCE15} \
+    %{buildroot}/gotwo_data/Application/php/lib/php/extensions/no-debug-non-zts-20151012/redis.so
 %pre
 
 
@@ -114,7 +123,7 @@ fi
 
 
 %changelog
-* Mon Oct 04 2017 Jamie Nguyen <yunwei@stargoto.com> - 2.2.0-1
-- update to upstream release 2.2.0
+* Mon Oct 04 2017 xiao xing <yunwei@stargoto.com> - 7.0.22-1
+- update to upstream release 7.0.22
 
 
