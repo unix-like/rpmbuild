@@ -32,7 +32,6 @@ developers to write dynamically generated pages quickly.
 
 
 %build
-
 ./configure \
     --prefix=/gotwo_data/Application/php \
     --with-config-file-path=/gotwo_data/Application/php/etc \
@@ -86,19 +85,19 @@ make %{?_smp_mflags}
 
 
 %install
-make install DESTDIR=%{buildroot} 
+make INSTALL_ROOT=%{buildroot} install
 
-install -p -D -m 0755 %{SOURCE10} \
+%{__install} -p -D -m 0755 %{SOURCE10} \
     %{buildroot}%{_initrddir}/php-fpm
-install -p -D -m 0644 %{SOURCE11} \
+%{__install} -p -D -m 0644 %{SOURCE11} \
     %{buildroot}%{_sysconfdir}/logrotate.d/php-fpm
-install -p -D -m 0644 %{SOURCE12} \
+%{__install} -p -D -m 0644 %{SOURCE12} \
     %{buildroot}/gotwo_data/Application/php/etc/php.ini
-install -p -D -m 0644 %{SOURCE13} \
+%{__install} -p -D -m 0644 %{SOURCE13} \
     %{buildroot}/gotwo_data/Application/php/etc/php-fpm.conf
-install -p -D -m 0644 %{SOURCE14} \
+%{__install} -p -D -m 0644 %{SOURCE14} \
     %{buildroot}/gotwo_data/Application/php/etc/php-fpm.d/www.conf
-install -p -D -m 0644 %{SOURCE15} \
+%{__install} -p -D -m 0644 %{SOURCE15} \
     %{buildroot}/gotwo_data/Application/php/lib/php/extensions/no-debug-non-zts-20151012/redis.so
 %pre
 
@@ -119,10 +118,7 @@ fi
 /gotwo_data/Application/php
 %attr(0755,root,root) /etc/rc.d/init.d/php-fpm
 %attr(0644,root,root) /etc/logrotate.d/php-fpm
-%attr(0755,root,root) /gotwo_data/logs/php
 %doc
-
-
 
 %changelog
 * Mon Oct 04 2017 xiao xing <yunwei@stargoto.com> - 7.0.22-1
